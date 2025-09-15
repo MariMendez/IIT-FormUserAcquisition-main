@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        String   @id @default(cuid())
+  nombre    String
+  rol       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  prospectosCreados Prospecto[]
+  citasCreadas      Cita[]
+
+  @@map("usuarios")
+}
+
+model Asesor {
+  id     String  @id @default(cuid())
+  nombre String
+  turno  String
+  activo Boolean @default(true)
+
+  // Relaciones
+  prospectos Prospecto[]
+  citas      Cita[]
+
+  @@map("asesores")
+}
+
+model Prospecto {
+  id             String   @id @default(cuid())
+  fechaRegistro  DateTime @default(now())
+  horaRegistro   String
+  nombre         String
+  celular        String
+  comoNosConoce  String
+  tipoRegistro   String   @default("Solicita informes")
+  nivelInteres   String
+  notas          String?
+  creadoPor      String
+
+  // Relaciones
+  asesor   Asesor  @relation(fields: [asesorId], references: [id])
+  asesorId String
+  usuario  Usuario @relation(fields: [creadoPor], references: [id])
+
+  @@map("prospectos")
+}
+
+model Cita {
+  id             String   @id @default(cuid())
+  fechaRegistro  DateTime @default(now())
+  horaRegistro   String
+  nombre         String
+  celular        String
+  comoNosConoce  String
+  tipoRegistro   String   @default("Cita")
+  nivelInteres   String
+  notas          String?
+  creadoPor      String
+
+  // Relaciones
+  asesor   Asesor  @relation(fields: [asesorId], references: [id])
+  asesorId String
+  usuario  Usuario @relation(fields: [creadoPor], references: [id])
+
+  @@map("citas")
+}
