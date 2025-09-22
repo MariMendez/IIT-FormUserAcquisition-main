@@ -226,22 +226,46 @@ export default function RegistroForm() {
                   Número de celular *
                 </Label>
                 <Input
-                id="celular"
-                type="tel"
-                value={formData.celular}
-                onChange={(e) => {
-                  const soloNumeros = e.target.value.replace(/[^0-9+]/g, "");
-                  handleInputChange("celular", soloNumeros);
-                }}
-                placeholder="+57XXXXXXXXXX"
-                className="text-lg p-3" 
-                inputMode="numeric"// sugiere teclado numérico en móviles
-                 maxLength={11}   // <-- asegura máximo 11
-                required
-              />
+                  id="celular"
+                  type="tel"
+                  value={formData.celular}
+                  onChange={(e) => {
+                    const valor = e.target.value;
 
-                <p className="text-xs text-gray-500">Formato internacional requerido (ej: +573001234567)</p>
+                    // Detectar caracteres no numéricos (excepto +)
+                    if (/[^0-9+]/.test(valor)) {
+                      setError("Solo se permiten números en este campo.");
+                      return;
+                    }
+
+                    // Validar máximo 11 caracteres (sin contar +)
+                    const limpio = valor.replace(/\+/g, "");
+                    if (limpio.length > 11) {
+                      setError("No se permiten más de 11 caracteres en este campo.");
+                      return;
+                    }
+
+                    // Si todo es válido, limpiar mensaje de error y actualizar
+                    setError(null);
+                    handleInputChange("celular", valor);
+                  }}
+                  placeholder="+57XXXXXXXXXX"
+                  className="text-lg p-3"
+                  inputMode="numeric" // teclado numérico en móviles
+                  required
+                />
+
+                {/* Mensaje de ayuda */}
+                <p className="text-xs text-gray-500">
+                  Formato internacional requerido (ej: +573001234567)
+                </p>
+
+                {/* Advertencia de validación */}
+                {error && (
+                  <p className="text-xs text-red-600 font-medium">{error}</p>
+                )}
               </div>
+  
 
               {/* Preferencia de contacto */}
               
